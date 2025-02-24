@@ -1,0 +1,171 @@
+:root {
+  --white: #ffffff;
+  --off-white: #fffeff;
+  --coral-red: #ef5862;
+  --dark-green: #213b1b;
+  --pale-pink: #ffeee9;
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+body,
+html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background-color: var(--dark-green);
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+  color: var(--white);
+}
+
+.navbar .nav-link:hover,
+.navbar .navbar-brand:hover {
+  color: var(--coral-red);
+}
+
+footer {
+  background-color: var(--dark-green);
+  color: var(--off-white);
+  text-align: center;
+  padding: 10px;
+  bottom: 0;
+  width: 100%;
+}
+
+.error-container {
+  background-color: var(--white);
+  color: var(--coral-red);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 5%;
+}
+
+.btn-home:hover {
+  background-color: var(--coral-red);
+}
+
+/* Estilos generales de los botones */
+.btn {
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Botón "Añadir" */
+.add-btn {
+  background-color: var(--coral-red);
+}
+
+/* Botón "Eliminar" */
+.delete-btn {
+  background-color: var(--dark-green);
+}
+
+/* Botón "Editar" */
+.edit-btn {
+  background-color: var(--pale-pink);
+  color: black;
+}
+
+/* Botón "Ver más" */
+.view-btn {
+  background-color: var(--off-white);
+  color: black;
+}
+
+.save-btn {
+  background-color: var(--pale-pink);
+  color: black;
+}
+
+.view-btn:hover {
+  border-color: var(--off-white);
+}
+
+.buy.btn {
+  background-color: var(--coral-red);
+}
+
+/* Estilo para el botón "Volver a inicio" */
+.btn-home {
+  background-color: var(
+    --coral-red
+  ); /* Usa el color coral-red para que resalte */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 25px; /* Borde redondeado para un look más suave */
+  text-transform: uppercase; /* Hace que el texto se vea en mayúsculas */
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-home:hover {
+  background-color: var(
+    --dark-green
+  ); /* Al pasar el mouse, cambia a dark-green */
+  transform: translateY(-2px); /* Efecto de elevación */
+}
+
+.btn-home:focus {
+  outline: none; /* Elimina el contorno del botón */
+}
+
+.btn-home:active {
+  transform: translateY(2px); /* Efecto de presionado */
+}
+
+/* Fondo */
+.background-section {
+  background-image: url("../img/cine.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 350px 0;
+  color: var(--off-white);
+}
+
+.background-section h1,
+.background-section p {
+  color: var(--off-white);
+}
+
+/* Desplegable */
+.dropdown-menu {
+  background-color: var(--dark-green);
+  border: none;
+}
+
+.dropdown-item {
+  color: var(--white);
+}
+
+.dropdown-item:hover {
+  background-color: var(--coral-red);
+  color: var(--white);
+}
+
+input[readonly],
+select[readonly],
+textarea[readonly] {
+  background-color: #f8f9fa; /* Color gris claro */
+  cursor: not-allowed; /* Cambia el cursor para indicar que no se puede escribir */
+}
