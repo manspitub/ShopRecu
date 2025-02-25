@@ -15,18 +15,15 @@ $username = ($isAdmin === false && !isset($_GET['user']))
     : (isset($_GET['user']) ? $_GET['user'] : $_SESSION['userLogged']['username']);
 
 // Determine the role
-if (isset($_GET['user'])) {
-    // Call getUserByUsername if 'user' parameter is provided in GET
-    $role = getUserByUsername($username)['role'];
-} else {
+
     $user = getUserByUsername($username);
     $email = $user['email'];
     $phone_number = $user['phone_number'];
     $address = $user['address'];
     $full_name = $user['full_name'];
     // Otherwise, use the role from the session
-    $role = isset($_SESSION['userLogged']['role']) ? $_SESSION['userLogged']['role'] : '';
-}
+    $role = $user['role'];
+
 $tabla = 'users';
 $columnaId = 'username';
 $success_message = $_GET['success_message'] ?? '';
@@ -190,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 <th scope="col">Nombre Completo</th>
                                 <th scope="col">Telefono</th>
                                 <th scope="col">Direccion</th>
+                                <th scope="col">Roles</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -205,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <td>
                                         <!-- Botones de acciones -->
                                         <div class="d-flex flex-column flex-sm-row gap-2">
-                                            <a href="./user.php?action=view&user=<?= urlencode($user['username']); ?>"
+                                            <a href="./profile.php?action=view&user=<?= urlencode($user['username']); ?>"
                                                 class="btn view-btn btn-sm">Ver Detalle Usuario</a>
 
                                         </div>

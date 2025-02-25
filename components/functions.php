@@ -267,6 +267,7 @@ function checkOldPass($oldPass)
     $userPass = getUserByUsername($_POST['username']);
     if (!password_verify($oldPass, $userPass['password']) and $oldPass !== $userPass['password']) { // Caso en el que sea admin y la pass sea text plain
         redirectError("La contraseña actual introducida no es correcta");
+        return false;   
     }
 
     return true;
