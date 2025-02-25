@@ -207,3 +207,102 @@ function getAll($table)
     $stmt = $db->query("SELECT * FROM $table");
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function handleUserPassword($userToEdit)
+{
+    $action = $_GET['action'] ?? '';  // Obtener el valor de la acción
+
+    if ($action === 'edit') {
+        updateUser($userToEdit);
+    }
+}
+
+function updateUser($user)
+{
+    // Si es correcta la contraseña actual, se actualiza la nueva introducida
+    if (checkOldPass($user['oldPass'])) {
+
+        // $newPass = $_POST['password'] ?? '';
+        // $data['password'] = password_hash($newPass, PASSWORD_DEFAULT);
+
+        // Si alguno de los valores no esta vacío, significa que el user quiere cambiar su pass
+        if (!empty($user['password']) || !empty($user['confirm_password'])) {
+            if ($user['password'] === $user['confirm_password']) {
+                if (validatePwd($user['password'])) {
+                    $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
+                } else {
+                    redirectError("La contraseña no es válida");
+                }
+            } else {
+                redirectError("Las contraseñas no coinciden");
+            }
+        } else {
+            // Si no se quiere cambiar contraseña se deja la que estaba
+            $user['password'] = password_hash($user['oldPass'], PASSWORD_DEFAULT);
+        }
+
+        // Quitamos asociaciones para poder editar correctamente
+        unset($user['oldPass']);
+        unset($user['confirm_password']);
+        updateRecord('users', $user, $user['username'], 'username');
+    }
+
+
+
+
+    // En el caso de que un usuario se este editando a si mismo, actualizamos el session
+    if ($_SESSION['userLogged']['username'] === $user['username']) {
+        // Actualizamos los campos 'username' y 'role' en la sesión directamente
+
+        $_SESSION['userLogged']['username'] = $user['username'];
+        $_SESSION['userLogged']['role'] = $user['role']; // El rol no se cambia
+    }
+    $messageAction = 'El usuario ' . $user['username'] . ' ha sido modificado correctamente :)';
+    echo "<script>window.location.href = './profile.php?success_message=" . urlencode($messageAction) . "';</script>";
+    exit;
+}
+
+function checkOldPass($oldPass)
+{
+    $userPass = getUserByUsername($_POST['username']);
+    if (!password_verify($oldPass, $userPass['password']) and $oldPass !== $userPass['password']) { // Caso en el que sea admin y la pass sea text plain
+        redirectError("La contraseña actual introducida no es correcta");
+    }
+
+    return true;
+}
+
+
+// Funcion para actualizar un registro por ID
+function updateRecord($table, $data, $id, $columnaId)
+{
+    $db = Database::getInstance()->getConnection();
+
+    // Validar campos antes de actualizar
+    validateFields($table, $data);
+
+    $setPart = [];
+    foreach ($data as $key => $value) {
+        $setPart[] = "$key = :$key";
+    }
+    $setClause = implode(", ", $setPart);
+    $sql = "UPDATE $table SET $setClause WHERE $columnaId = :id";
+
+    $stmt = $db->prepare($sql);
+
+    foreach ($data as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+    $stmt->bindValue(":id", $id);
+    try {
+        $stmt->execute();
+
+        return true; // Inserción exitosa
+    } catch (PDOException $e) {
+        if ($e->getCode() == 23000) {
+            redirectError("Error: Ya existe un registro con esta clave primaria.");
+        }
+        redirectError("Error al insertar el registro: " . $e->getMessage());
+    }
+    return $stmt->execute();
+}

@@ -127,3 +127,12 @@ document
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("registerButton").disabled = true;
 });
+
+document.getElementById("togglePasswordFields").addEventListener("click", function() {
+  var passwordFields = document.getElementById("passwordFields");
+  if (passwordFields.style.display === "none") {
+      passwordFields.style.display = "block";
+  } else {
+      passwordFields.style.display = "none";
+  }
+});

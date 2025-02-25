@@ -19,6 +19,11 @@ if (isset($_GET['user'])) {
     // Call getUserByUsername if 'user' parameter is provided in GET
     $role = getUserByUsername($username)['role'];
 } else {
+    $user = getUserByUsername($username);
+    $email = $user['email'];
+    $phone_number = $user['phone_number'];
+    $address = $user['address'];
+    $full_name = $user['full_name'];
     // Otherwise, use the role from the session
     $role = isset($_SESSION['userLogged']['role']) ? $_SESSION['userLogged']['role'] : '';
 }
@@ -46,17 +51,17 @@ if (!$isAdmin and isset($_GET['user'])) {
 }
 
 
-// if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-//     // Valida datos y edita según si quieres editar el usuario unicamente o el usuario y contraseña
+    // Valida datos y edita según si quieres editar el usuario unicamente o el usuario y contraseña
 
-//     $password = $_POST['password'] ?? '';  // Si no se pasa la contraseña, asignar un valor vacío
-//     $passwordRep = $_POST['confirm_password'] ?? '';  // Si no se pasa la confirmación de la contraseña, asignar un valor vacío
-//     $usernameToEdit = isset($_GET['user']) ? $_GET['user'] : trim($_SESSION['userLogged']['username']); // Si se recibe un user por get se edita ese user sino el usuario logueado
-
-//     // Llamar a la función pasando las contraseñas y el nombre de usuario
-//     handleUserPassword($password, $passwordRep, trim($usernameToEdit));
-// }
+    // $password = $_POST['password'] ?? '';  // Si no se pasa la contraseña, asignar un valor vacío
+    // $passwordRep = $_POST['confirm_password'] ?? '';  // Si no se pasa la confirmación de la contraseña, asignar un valor vacío
+    // $usernameToEdit = isset($_GET['user']) ? $_GET['user'] : trim($_SESSION['userLogged']['username']); // Si se recibe un user por get se edita ese user sino el usuario logueado
+    $userToEdit = $_POST;
+    // Llamar a la función pasando las contraseñas y el nombre de usuario
+    handleUserPassword($userToEdit);
+}
 
 
 
@@ -87,10 +92,30 @@ if (!$isAdmin and isset($_GET['user'])) {
                 </div>
 
                 <div class="mb-3">
+                    <label for="username" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name"
+                        value="<?php echo htmlspecialchars($full_name ?? ''); ?>" <?php echo $action === 'edit' ? '' : 'readonly'; ?>>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="address" name="address"
+                        value="<?php echo htmlspecialchars($address ?? ''); ?>" <?php echo $action === 'edit' ? '' : 'readonly'; ?>>
+                </div>
+
+
+                <div class="mb-3">
                     <label for="username" class="form-label">Email</label>
                     <input type="text" class="form-control" id="email" name="email"
-                        value="<?php echo htmlspecialchars($email ?? ''); ?>" readonly>
+                        value="<?php echo htmlspecialchars($email ?? ''); ?>" <?php echo $action === 'edit' ? '' : 'readonly'; ?>>
                 </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="phone_number" name="phone_number"
+                        value="<?php echo htmlspecialchars($phone_number ?? ''); ?>" <?php echo $action === 'edit' ? '' : 'readonly'; ?>>
+                </div>
+
 
                 <div class="mb-3">
                     <label for="role" class="form-label">Rol</label>
@@ -107,10 +132,7 @@ if (!$isAdmin and isset($_GET['user'])) {
                     <?php endif; ?>
                 </div>
 
-                <!-- <?php if ($action === 'edit'): ?>
-
-
-
+                <?php if ($action === 'edit'): ?>
 
                     <div class="mb-3">
                         <h2>Cambiar Contraseña</h2>
@@ -120,26 +142,25 @@ if (!$isAdmin and isset($_GET['user'])) {
                     <div id="passwordFields">
                         <div class="mb-3">
                             <label for="oldPass" class="form-label">Contraseña Actual</label>
-                            <input type="password" class="form-control" id="oldPass" name="oldPass">
+                            <input type="password" class="form-control" id="oldPass" name="oldPass" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Nueva Contraseña</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                placeholder="Ingresa tu contraseña">
-                            <div id="passwordHelper" class="mt-2">
-
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña">
+                            <div id="passwordHelper" class="mt-2 text-muted">
+                                No introduzcas nada si no quieres cambiar tu contraseña.
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="confirm_password" class="form-label">Confirmar contraseña</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
-                                placeholder="Repite tu contraseña">
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Repite tu contraseña">
                             <div id="passwordError" class="text-danger mt-2" style="display: none;">
                                 Las contraseñas no coinciden.
                             </div>
                         </div>
+
                     </div>
-                <?php endif ?> -->
+                <?php endif ?>
 
 
 
