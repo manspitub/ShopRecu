@@ -43,10 +43,10 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
                                 Categorías
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="#">Inicio</a></li>
-                                <li><a class="dropdown-item" href="#">Productos</a></li>
-                                <li><a class="dropdown-item" href="#">Ofertas</a></li>
-                                <li><a class="dropdown-item" href="#">Contacto</a></li>
+                                <li><a class="dropdown-item" href="<?php echo $url; ?>">Inicio</a></li>
+                                <li><a class="dropdown-item" href="<?php echo $url; ?>/products.php">Productos</a></li>
+                                <li><a class="dropdown-item" href="<?php echo $url; ?>/categories.php">Categorías</a></li>
+                                
                             </ul>
                         </li>
                         <li class="nav-item">

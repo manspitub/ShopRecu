@@ -14,15 +14,14 @@ $username = ($isAdmin === false && !isset($_GET['user']))
     ? (isset($_SESSION['userLogged']['username']) ? $_SESSION['userLogged']['username'] : '')
     : (isset($_GET['user']) ? $_GET['user'] : $_SESSION['userLogged']['username']);
 
-// Determine the role
 
-    $user = getUserByUsername($username);
-    $email = $user['email'];
-    $phone_number = $user['phone_number'];
-    $address = $user['address'];
-    $full_name = $user['full_name'];
-    // Otherwise, use the role from the session
-    $role = $user['role'];
+
+$user = getUserByUsername($username);
+$email = $user['email'];
+$phone_number = $user['phone_number'];
+$address = $user['address'];
+$full_name = $user['full_name'];
+$role = $user['role'];
 
 $tabla = 'users';
 $columnaId = 'username';

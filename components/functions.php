@@ -307,3 +307,272 @@ function updateRecord($table, $data, $id, $columnaId)
     }
     return $stmt->execute();
 }
+
+// Funcion para obtener un registro por ID de la table que quieras
+function getById($table, $id, $columnaId)
+{
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT * FROM $table WHERE $columnaId = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+
+// Category
+
+//NOMBRE DE CATEGORIA 
+function getCategoryName($category_id) {
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("SELECT name FROM categories WHERE id = ?");
+    $stmt->execute([$category_id]);
+
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $row ? $row['name'] : "Sin categoría";
+}
+
+
+//validar si ya existe esa categoria
+function validateCategories($table, $name, $id = null, $columnaId = 'id') {
+    $db = Database::getInstance()->getConnection();
+    
+    // Preparar la consulta SQL
+    $sql = "SELECT COUNT(*) FROM $table WHERE name = ?";
+    
+    // Si se proporciona un ID, también verificamos que no exista otra categoría con el mismo ID
+    if ($id !== null) {
+        $sql .= " AND $columnaId != ?";
+    }
+
+    $stmt = $db->prepare($sql);
+    
+    // Ejecutar la consulta
+    if ($id !== null) {
+        $stmt->execute([$name, $id]);
+    } else {
+        $stmt->execute([$name]);
+    }
+
+    // Obtener el conteo
+    $count = $stmt->fetchColumn();
+
+    // Si el conteo es mayor que 0, significa que ya existe una categoría con ese nombre (y posible ID)
+    return $count > 0;
+}
+
+// Inserta una categoría en la Base de Datos
+function insertCategory($table, $data)
+{
+    $db = Database::getInstance()->getConnection();
+
+    // Generar un nuevo ID solo si la tabla es 'categories'
+    if ($table === 'categories') {
+        $newId = generateNewCategoryId($table);
+        $data['id'] = $newId; // Asignar el nuevo ID al array de datos
+    }
+
+    // Construir la consulta SQL
+    $columns = implode(", ", array_keys($data));
+    $placeholders = ":" . implode(", :", array_keys($data));
+
+    // SQL para insertar la categoría
+    $sql = "INSERT INTO categories ($columns) VALUES ($placeholders)";
+    $stmt = $db->prepare($sql);
+
+    // Bindear los parámetros
+    foreach ($data as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+
+    // Ejecutar la consulta y retornar el resultado
+    return $stmt->execute();
+}
+
+// GENERAR ID DE CATEGORÍA
+function generateNewCategoryId($table)
+{
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->query("SELECT MAX(id) AS max_id FROM $table");
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Si no hay registros, comenzar desde un ID base
+    if (!$row['max_id']) {
+        return '1'; // o el valor inicial que desees
+    }
+
+    // Incrementar el ID numérico
+    $nuevoId = intval($row['max_id']) + 1;
+    return $nuevoId;
+}
+
+// ACTUALIZAR UNA CATEGORÍA
+function updateCategory($table, $data, $id, $columnaId = 'id')
+{
+    // Validaciones específicas para la tabla Category
+    if ($table === 'categories') {
+        // Validar si el nombre no está vacío
+        if (isset($data['nombre']) && empty($data['nombre'])) {
+            $error_message = "El campo 'nombre' no puede estar vacío.";
+            echo "<script>window.location.href = '../../../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
+            return false;
+        }
+    }
+
+    try {
+        $db = Database::getInstance()->getConnection();
+        $set = "";
+        foreach ($data as $columna => $valor) {
+            $set .= "$columna = :$columna, ";
+        }
+        $set = rtrim($set, ", ");
+        $stmt = $db->prepare("UPDATE $table SET $set WHERE $columnaId = :id");
+        $data['id'] = $id;
+
+        return $stmt->execute($data);
+    } catch (PDOException $e) {
+        echo "<script>window.location.href = '../../../logs/error.php?error_message=Error de base de datos: " . htmlspecialchars($e->getMessage()) . ".';</script>";
+        return false;
+    }
+}
+
+// BORRAR UNA CATEGORÍA
+function deleteCategory($table, $id, $columnaId = 'id')
+{
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("DELETE FROM $table WHERE $columnaId = ?");
+
+    return $stmt->execute([$id]);
+}
+
+// PRODUCTS
+
+//Validar si ya existe producto
+function validateProductName($table, $name, $id = null, $columnaId = 'id') {
+    $db = Database::getInstance()->getConnection();
+    
+    // Preparar la consulta SQL
+    $sql = "SELECT COUNT(*) FROM $table WHERE name = ?";
+    
+    // Si se proporciona un ID, aseguramos que el producto con ese ID no sea el mismo
+    if ($id !== null) {
+        $sql .= " AND $columnaId != ?";
+    }
+
+    $stmt = $db->prepare($sql);
+    
+    // Ejecutar la consulta
+    if ($id !== null) {
+        $stmt->execute([$name, $id]);
+    } else {
+        $stmt->execute([$name]);
+    }
+
+    // Obtener el conteo
+    $count = $stmt->fetchColumn();
+
+    // Si el conteo es mayor que 0, significa que ya existe un producto con ese nombre
+    return $count > 0;
+}
+
+//AÑADIR UN PRODUCTO
+function insertProduct($table,$data)
+{
+    $db = Database::getInstance()->getConnection();
+
+    // Generar un nuevo ID solo si la tabla es 'products'
+    if ($table === 'products') {
+        $newId = generateNewProductId($table);
+        $data['id'] = $newId; // Asignar el nuevo ID al array de datos
+    }
+
+    // Construir la consulta SQL
+    $columns = implode(", ", array_keys($data));
+    $placeholders = ":" . implode(", :", array_keys($data));
+
+    // SQL para insertar el producto
+    $sql = "INSERT INTO products ($columns) VALUES ($placeholders)";
+    $stmt = $db->prepare($sql);
+
+    // Bindear los parámetros
+    foreach ($data as $key => $value) {
+        $stmt->bindValue(":$key", $value);
+    }
+
+    // Ejecutar la consulta y retornar el resultado
+    return $stmt->execute();
+}
+
+//GENERAR ID DE PRODUCTO
+function generateNewProductId($table)
+{
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->query("SELECT MAX(id) AS max_id FROM $table");
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Si no hay registros, comenzar desde un ID base
+    if (!$row['max_id']) {
+        return '1'; // o el valor inicial que desees
+    }
+
+    // Incrementar el ID numérico
+    $nuevoId = intval($row['max_id']) + 1; // Incrementar el ID numérico
+    return $nuevoId; // Retornar nuevo ID
+}
+
+//ACTUALIZAR UN PRODUCTO 
+function updateProduct($table, $data, $id, $columnaId = 'id')
+{
+    // Validaciones específicas para la tabla Producto
+    if ($table === 'products') {
+        // Validar si el precio es un número
+        if (isset($data['precio']) && !is_numeric($data['precio'])) {
+            $error_message = "El valor de 'precio' debe ser un número.";
+            echo "<script>window.location.href = '../../../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
+            return false;
+        }
+        
+        // Validar si el nombre no está vacío
+        if (isset($data['nombre']) && empty($data['nombre'])) {
+            $error_message = "El campo 'nombre' no puede estar vacío.";
+            echo "<script>window.location.href = '../../../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
+            return false;
+        }
+    }
+
+    try {
+        $db = Database::getInstance()->getConnection();
+        $set = "";
+        foreach ($data as $columna => $valor) {
+            $set .= "$columna = :$columna, ";
+        }
+        $set = rtrim($set, ", ");
+        $stmt = $db->prepare("UPDATE $table SET $set WHERE $columnaId = :id");
+        $data['id'] = $id;
+
+        return $stmt->execute($data);
+    } catch (PDOException $e) {
+        echo "<script>window.location.href = '../../../logs/error.php?error_message=Error de base de datos: " . htmlspecialchars($e->getMessage()) . ".';</script>";
+        return false;
+    }
+}
+
+//BORRAR PRODUCTO 
+function deleteProduct($table, $id, $columnaId = 'id')
+{
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("DELETE FROM $table WHERE $columnaId = ?");
+
+    return $stmt->execute([$id]);
+}
+
+function getAllCategories() {
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->query("SELECT id, name FROM categories");
+    $categories = [];
+
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $categories[] = $row;
+    }
+
+    return $categories;
+}
