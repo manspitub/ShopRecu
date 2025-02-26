@@ -9,6 +9,7 @@ $tabla = 'categories'; // nombre de la tabla de la base de datos
 $columnaId = 'id'; // columna que es la primary key de la tabla
 $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : '';
 $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
+$role = isset($_SESSION['userLogged']['role']) ? $_SESSION['userLogged']['role'] : '';
 
 if (!in_array($action, ['view', 'delete', 'edit', 'add'])) {
     $error_message = "Acción no permitida.";
@@ -21,6 +22,9 @@ if (($action === 'view' || $action === 'delete' || $action === 'edit') && empty(
     echo "<script>window.location.href = '../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
     exit;
 }
+
+unauthorized($action, $role, 'ADMIN');
+
 // ADD
 if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $datos = [
@@ -132,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($action === 'view' || $action === 'delete'): ?>
             <h2><?php echo ($action === 'view') ? 'Detalles de la Categoría' : 'Confirmar Eliminación'; ?></h2>
             <form method="post">
-            <div class="mb-3">
+                <div class="mb-3">
                     <label class="form-label">Id</label>
                     <input type="text" class="form-control" value="<?php echo htmlspecialchars($categoria['id']); ?>" readonly>
                 </div>
@@ -145,42 +149,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <textarea class="form-control" readonly><?php echo htmlspecialchars($categoria['description']); ?></textarea>
                 </div>
                 <?php if ($action === 'view'): ?>
-                <!-- Botón de volver solo para la acción 'view' -->
-                <a href="../categories.php" class="btn btn-secondary">Volver</a>
-            <?php endif; ?>
-                
+                    <!-- Botón de volver solo para la acción 'view' -->
+                    <a href="../categories.php" class="btn btn-secondary">Volver</a>
+                <?php endif; ?>
+
                 <?php if ($action === 'delete'): ?>
-    <form method="post">
-        
+                    <form method="post">
 
-        <?php if (empty($_POST['confirm_step'])): ?>
-            <!-- Primera confirmación -->
-            <input type="hidden" name="confirm_step" value="1">
-            <button type="submit" class="btn btn-warning">¿Estás seguro de eliminar esta categoría?</button>
-        <?php elseif ($_POST['confirm_step'] == 1): ?>
-            <!-- Segunda confirmación -->
-            <input type="hidden" name="confirm_step" value="2">
-            <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
-        <?php endif; ?>
-        <a href="../categories.php" class="btn btn-secondary">Volver</a>
-    </form>
-<?php endif; ?>
 
-        <?php elseif ($action === 'edit' || $action === 'add'): ?>
-            <h2><?php echo ($action === 'edit') ? 'Editar Categoría' : 'Añadir Categoría'; ?></h2>
-            <form method="post">
-                <div class="mb-3">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" name="name" class="form-control" value="<?php echo $action === 'edit' ? htmlspecialchars($categoria['name']) : ''; ?>" required pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" title="Solo se permiten letras y espacios">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Descripción</label>
-                    <input type="text" name="description" class="form-control" value="<?php echo $action === 'edit' ? htmlspecialchars($categoria['description']) : ''; ?>" required pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" title="Solo se permiten letras y espacios">
-                </div>
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <a href="../categories.php" class="btn btn-secondary">Cancelar</a>
-            </form>
-        <?php endif; ?>
+                        <?php if (empty($_POST['confirm_step'])): ?>
+                            <!-- Primera confirmación -->
+                            <input type="hidden" name="confirm_step" value="1">
+                            <button type="submit" class="btn btn-warning">¿Estás seguro de eliminar esta categoría?</button>
+                        <?php elseif ($_POST['confirm_step'] == 1): ?>
+                            <!-- Segunda confirmación -->
+                            <input type="hidden" name="confirm_step" value="2">
+                            <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+                        <?php endif; ?>
+                        <a href="../categories.php" class="btn btn-secondary">Volver</a>
+                    </form>
+                <?php endif; ?>
+
+            <?php elseif ($action === 'edit' || $action === 'add'): ?>
+                <h2><?php echo ($action === 'edit') ? 'Editar Categoría' : 'Añadir Categoría'; ?></h2>
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="name" class="form-control" value="<?php echo $action === 'edit' ? htmlspecialchars($categoria['name']) : ''; ?>" required pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" title="Solo se permiten letras y espacios">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" name="description" class="form-control" value="<?php echo $action === 'edit' ? htmlspecialchars($categoria['description']) : ''; ?>" required pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" title="Solo se permiten letras y espacios">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="../categories.php" class="btn btn-secondary">Cancelar</a>
+                </form>
+            <?php endif; ?>
     </div>
 </main>
 

@@ -134,13 +134,13 @@ footer {
 }
 
 /* Fondo */
-.background-section {
-  background-image: url("../img/cine.jpg");
+.background-main {
+  background-image: url("../img/shopBackground.jpeg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   padding: 350px 0;
-  color: var(--off-white);
+  
 }
 
 .background-section h1,

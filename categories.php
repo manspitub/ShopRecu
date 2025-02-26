@@ -41,8 +41,11 @@ $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : 
                                 <td><?= htmlspecialchars($categoria['name']); ?></td>
                                 <td>
                                     <a href="../forms/formCategories.php?action=view&id=<?= urlencode($categoria['id']); ?>" class="btn btn-primary btn-sm">Ver</a>
-                                    <a href="../forms/formCategories.php?action=edit&id=<?= urlencode($categoria['id']); ?>" class="btn btn-warning btn-sm">Editar</a>
-                                    <a href="../forms/formCategories.php?action=delete&id=<?= urlencode($categoria['id']); ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <?php if (isset($_SESSION['userLogged']['role']) && $_SESSION['userLogged']['role'] === 'ADMIN'): ?>
+                                        <a href="../forms/formCategories.php?action=edit&id=<?= urlencode($categoria['id']); ?>" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="../forms/formCategories.php?action=delete&id=<?= urlencode($categoria['id']); ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <?php endif; ?>
+                                    
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -58,4 +61,3 @@ $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : 
 <?php
 require_once(__DIR__ . '/components/footer.php');
 ?>
-

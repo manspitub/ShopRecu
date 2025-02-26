@@ -9,6 +9,7 @@ $tabla = 'products'; // nombre de la tabla de la base de datos
 $columnaId = 'id'; // columna que es la primary key de la tabla
 $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : '';
 $error_message = isset($_GET['error_message']) ? $_GET['error_message'] : '';
+$role = isset($_SESSION['userLogged']['role']) ? $_SESSION['userLogged']['role'] : '';
 
 
 
@@ -27,6 +28,9 @@ if (($action === 'view' || $action === 'delete' || $action === 'edit') && empty(
     echo "<script>window.location.href = '../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
     exit;
 }
+
+
+unauthorized($action, $role, 'ADMIN');
 
 // Si la acción es 'add', procesa la inserción
 if ($action === 'add' && $_SERVER['REQUEST_METHOD'] === 'POST') {

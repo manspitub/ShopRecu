@@ -40,9 +40,9 @@ $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : 
                     </thead>
                     <tbody>
                         <?php foreach ($productos as $producto): ?>
-                            <?php 
-                                // Obtener el nombre de la categoría
-                                $category_name = getCategoryName($producto['category_id']);
+                            <?php
+                            // Obtener el nombre de la categoría
+                            $category_name = getCategoryName($producto['category_id']);
                             ?>
                             <tr>
                                 <td><?= htmlspecialchars($producto['name']); ?></td>
@@ -50,8 +50,12 @@ $success_message = isset($_GET['success_message']) ? $_GET['success_message'] : 
                                 <td><?= htmlspecialchars($category_name); ?></td>
                                 <td>
                                     <a href="../forms/formProduct.php?action=view&id=<?= urlencode($producto['id']); ?>" class="btn btn-primary btn-sm">Ver</a>
-                                    <a href="../forms/formProduct.php?action=edit&id=<?= urlencode($producto['id']); ?>" class="btn btn-warning btn-sm">Editar</a>
-                                    <a href="../forms/formProduct.php?action=delete&id=<?= urlencode($producto['id']); ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <?php if (isset($_SESSION['userLogged']['role']) && $_SESSION['userLogged']['role'] === 'ADMIN'): ?>
+                                        <a href="../forms/formProduct.php?action=edit&id=<?= urlencode($producto['id']); ?>" class="btn btn-warning btn-sm">Editar</a>
+                                        <a href="../forms/formProduct.php?action=delete&id=<?= urlencode($producto['id']); ?>" class="btn btn-danger btn-sm">Eliminar</a>
+                                    <?php endif; ?>
+
+
                                 </td>
                             </tr>
                         <?php endforeach; ?>

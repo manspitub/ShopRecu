@@ -9,9 +9,9 @@ if (isset($_GET['logout']) && $_GET['logout'] === 'true' && !empty($_SESSION['us
 
 <div class="background-section">
     <div class="container">
-        <?php if (!empty($success_message)): ?>
+        <?php if (!empty($success_message)) : ?>
             <div class="alert alert-success text-center">
-                <?php echo htmlspecialchars($success_message); ?>
+                <?= htmlspecialchars($success_message); ?>
             </div>
         <?php endif; ?>
         <h1 class="text-center mb-4">Shop Jaca</h1>

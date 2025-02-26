@@ -1,7 +1,6 @@
 <?php require_once("functions.php");
 // Genera la URL a partir de la ruta del directorio actual, subiendo un nivel
 $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -12,11 +11,9 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
     <title>Shop Jaca</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo $url; ?>/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="shortcut icon" href="<?php echo $url; ?>/assets/img/shopIcon.png" type="image/x-icon">
-
 </head>
 
 <body>
@@ -24,8 +21,8 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
         <nav class="navbar navbar-expand-lg">
             <div class="container">
                 <!-- Logo de la tienda -->
-                <a class="navbar-brand" href="#">
-                    <img src="/assets/img/shopIcon.png" alt="Shop Jaca" height="40">
+                <a class="navbar-brand" href="<?php echo $url; ?>">
+                    <img src="<?php echo $url; ?>/assets/img/shopIcon.png" alt="Shop Jaca" height="40">
                 </a>
 
                 <!-- Botón de menú móvil -->
@@ -43,48 +40,48 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
                                 Categorías
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="<?php echo $url; ?>">Inicio</a></li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="<?php echo '//' . $_SERVER['HTTP_HOST'] . $url; ?>">Inicio</a>
+                                </li>
+
                                 <li><a class="dropdown-item" href="<?php echo $url; ?>/products.php">Productos</a></li>
                                 <li><a class="dropdown-item" href="<?php echo $url; ?>/categories.php">Categorías</a></li>
-                                
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Inicio</a>
+                            <a class="nav-link" href="<?php echo '//' . $_SERVER['HTTP_HOST'] . $url; ?>">Inicio</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo $url; ?>/about.php">Sobre Nosotros</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Sobre Nosotros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Tienda</a>
+                            <a class="nav-link" href="<?php echo $url; ?>/store.php">Tienda</a>
                         </li>
                         <?php if (!isset($_SESSION['userLogged'])): ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="../user/login.php" class="btn btn-primary">Iniciar sesión</a>
+                                <a class="nav-link btn btn-secondary" href="<?php echo $url; ?>/user/login.php">Iniciar sesión</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="../user/register.php" class="btn btn-secondary">Registrarse</a>
+                                <a class="nav-link btn btn-secondary" href="<?php echo $url; ?>/user/register.php">Registrarse</a>
                             </li>
                         <?php else: ?>
-
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <?php echo htmlspecialchars($_SESSION['userLogged']['username']); ?>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item"
-                                            href="<?php echo $url; ?>/user/profile.php?action=view">Perfil</a>
+                                    <li>
+                                        <a class="dropdown-item" href="<?php echo $url; ?>/user/profile.php?action=view">Perfil</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item"
-                                            href="<?php echo htmlspecialchars($url . '/index.php?logout=true&success_message=' . urlencode('Sesión cerrada exitosamente')); ?>">
+                                        <a class="dropdown-item" href="<?php echo htmlspecialchars($url . '/index.php?logout=true&success_message=' . urlencode('Sesión cerrada exitosamente')); ?>">
                                             Cerrar sesión
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item"
-                                            href="<?php echo $url . '/#' ?>">Ver mis compras</a>
+                                        <a class="dropdown-item" href="<?php echo $url; ?>/orders.php">Ver mis compras</a>
                                     </li>
                                 </ul>
                             </li>
@@ -95,3 +92,5 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
         </nav>
     </header>
 </body>
+
+</html>

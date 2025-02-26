@@ -267,7 +267,7 @@ function checkOldPass($oldPass)
     $userPass = getUserByUsername($_POST['username']);
     if (!password_verify($oldPass, $userPass['password']) and $oldPass !== $userPass['password']) { // Caso en el que sea admin y la pass sea text plain
         redirectError("La contraseña actual introducida no es correcta");
-        return false;   
+        return false;
     }
 
     return true;
@@ -321,7 +321,8 @@ function getById($table, $id, $columnaId)
 // Category
 
 //NOMBRE DE CATEGORIA 
-function getCategoryName($category_id) {
+function getCategoryName($category_id)
+{
     $db = Database::getInstance()->getConnection();
     $stmt = $db->prepare("SELECT name FROM categories WHERE id = ?");
     $stmt->execute([$category_id]);
@@ -333,19 +334,20 @@ function getCategoryName($category_id) {
 
 
 //validar si ya existe esa categoria
-function validateCategories($table, $name, $id = null, $columnaId = 'id') {
+function validateCategories($table, $name, $id = null, $columnaId = 'id')
+{
     $db = Database::getInstance()->getConnection();
-    
+
     // Preparar la consulta SQL
     $sql = "SELECT COUNT(*) FROM $table WHERE name = ?";
-    
+
     // Si se proporciona un ID, también verificamos que no exista otra categoría con el mismo ID
     if ($id !== null) {
         $sql .= " AND $columnaId != ?";
     }
 
     $stmt = $db->prepare($sql);
-    
+
     // Ejecutar la consulta
     if ($id !== null) {
         $stmt->execute([$name, $id]);
@@ -447,19 +449,20 @@ function deleteCategory($table, $id, $columnaId = 'id')
 // PRODUCTS
 
 //Validar si ya existe producto
-function validateProductName($table, $name, $id = null, $columnaId = 'id') {
+function validateProductName($table, $name, $id = null, $columnaId = 'id')
+{
     $db = Database::getInstance()->getConnection();
-    
+
     // Preparar la consulta SQL
     $sql = "SELECT COUNT(*) FROM $table WHERE name = ?";
-    
+
     // Si se proporciona un ID, aseguramos que el producto con ese ID no sea el mismo
     if ($id !== null) {
         $sql .= " AND $columnaId != ?";
     }
 
     $stmt = $db->prepare($sql);
-    
+
     // Ejecutar la consulta
     if ($id !== null) {
         $stmt->execute([$name, $id]);
@@ -475,7 +478,7 @@ function validateProductName($table, $name, $id = null, $columnaId = 'id') {
 }
 
 //AÑADIR UN PRODUCTO
-function insertProduct($table,$data)
+function insertProduct($table, $data)
 {
     $db = Database::getInstance()->getConnection();
 
@@ -530,7 +533,7 @@ function updateProduct($table, $data, $id, $columnaId = 'id')
             echo "<script>window.location.href = '../../../logs/error.php?error_message=" . urlencode($error_message) . "';</script>";
             return false;
         }
-        
+
         // Validar si el nombre no está vacío
         if (isset($data['nombre']) && empty($data['nombre'])) {
             $error_message = "El campo 'nombre' no puede estar vacío.";
@@ -565,7 +568,8 @@ function deleteProduct($table, $id, $columnaId = 'id')
     return $stmt->execute([$id]);
 }
 
-function getAllCategories() {
+function getAllCategories()
+{
     $db = Database::getInstance()->getConnection();
     $stmt = $db->query("SELECT id, name FROM categories");
     $categories = [];
@@ -575,4 +579,22 @@ function getAllCategories() {
     }
 
     return $categories;
+}
+
+// Mostramos un mensaje de error 401 si el usuario no tiene permiso para acceder a una URL
+function unauthorized($action, $roleUser, $roleValid)
+{
+    // Si el rol del usuario está vacío, redirigir a login con mensaje de error
+    if (empty($roleUser)) {
+        echo "<script>window.location.href='../user/login.php?error_message=" . urlencode('Inicia sesión para realizar esta operación') . "';</script>";
+        exit;
+    }
+    // Comprobar si la acción es de tipo gestión (add, edit, delete)
+    if (in_array(strtolower($action), ['add', 'edit', 'delete'])) {
+        // Verifica si el rol del usuario no es el rol válido
+        if (strtoupper($roleUser) !== strtoupper($roleValid)) {
+            // Redirigir al error 401 si el rol no es válido
+            redirectError("ERROR 401, UNAUTHORIZED");
+        }
+    }
 }
