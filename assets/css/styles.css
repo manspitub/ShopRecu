@@ -6,6 +6,15 @@
   --pale-pink: #ffeee9;
 }
 
+/* Estructura general */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .content-wrapper {
   min-height: 100vh;
   display: flex;
@@ -16,14 +25,7 @@
   flex: 1;
 }
 
-body,
-html {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Navbar */
 .navbar {
   background-color: var(--dark-green);
 }
@@ -31,6 +33,7 @@ html {
 .navbar .nav-link,
 .navbar .navbar-brand {
   color: var(--white);
+  transition: color 0.3s ease;
 }
 
 .navbar .nav-link:hover,
@@ -38,15 +41,122 @@ html {
   color: var(--coral-red);
 }
 
+/* Dropdown */
+.dropdown-menu {
+  background-color: var(--dark-green);
+  border: none;
+}
+
+.dropdown-item {
+  color: var(--white);
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--coral-red);
+  color: var(--white);
+}
+
+/* Footer */
 footer {
   background-color: var(--dark-green);
   color: var(--off-white);
   text-align: center;
   padding: 10px;
-  bottom: 0;
   width: 100%;
 }
 
+/* Botones generales */
+.btn {
+  color: var(--white);
+  border: none;
+  padding: 5px 10px;
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Botones específicos */
+.add-btn {
+  background-color: var(--coral-red);
+}
+
+.delete-btn {
+  background-color: var(--dark-green);
+}
+
+.edit-btn {
+  background-color: var(--pale-pink);
+  color: #000;
+}
+
+.view-btn {
+  background-color: var(--off-white);
+  color: #000;
+  transition: border-color 0.3s ease;
+}
+
+.view-btn:hover {
+  border-color: var(--off-white);
+}
+
+.save-btn {
+  background-color: var(--pale-pink);
+  color: #000;
+}
+
+.buy.btn {
+  background-color: var(--coral-red);
+}
+
+/* Botón "Volver a inicio" */
+.btn-home {
+  background-color: var(--coral-red);
+  color: var(--white);
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-transform: uppercase;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-home:hover {
+  background-color: var(--dark-green);
+  transform: translateY(-2px);
+}
+
+.btn-home:focus {
+  outline: none;
+}
+
+.btn-home:active {
+  transform: translateY(2px);
+}
+
+/* Fondo principal */
+.background-main {
+  background-image: url("../img/shopBackground.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 350px 0;
+}
+
+.background-section h1,
+.background-section p {
+  color: var(--off-white);
+}
+
+/* Estilos para elementos readonly */
+input[readonly],
+select[readonly],
+textarea[readonly] {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+/* Otras utilidades */
 .error-container {
   background-color: var(--white);
   color: var(--coral-red);
@@ -140,7 +250,6 @@ footer {
   background-position: center;
   background-attachment: fixed;
   padding: 350px 0;
-  
 }
 
 .background-section h1,

@@ -18,11 +18,11 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg" aria-label="Main navigation">
             <div class="container">
                 <!-- Logo de la tienda -->
                 <a class="navbar-brand" href="<?php echo $url; ?>">
-                    <img src="<?php echo $url; ?>/assets/img/shopIcon.png" alt="Shop Jaca" height="40">
+                    <img src="<?php echo $url; ?>/assets/img/shopIcon.png" alt="Logo de Shop Jaca" height="40">
                 </a>
 
                 <!-- Botón de menú móvil -->
@@ -34,31 +34,31 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
                 <!-- Menú de navegación -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
+                        <!-- Enlace directo a Inicio -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo '//' . $_SERVER['HTTP_HOST'] . $url; ?>">Inicio</a>
+                        </li>
+                        <!-- Dropdown de Categorías -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                Categorías
+                                Tienda
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li class="nav-item">
                                     <a class="nav-link" href="<?php echo '//' . $_SERVER['HTTP_HOST'] . $url; ?>">Inicio</a>
                                 </li>
-
-                                <li><a class="dropdown-item" href="<?php echo $url; ?>/products.php">Productos</a></li>
-                                <li><a class="dropdown-item" href="<?php echo $url; ?>/categories.php">Categorías</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="<?php echo $url; ?>/products.php">Productos</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="<?php echo $url; ?>/categories.php">Categorías</a>
+                                </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo '//' . $_SERVER['HTTP_HOST'] . $url; ?>">Inicio</a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo $url; ?>/about.php">Sobre Nosotros</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo $url; ?>/store.php">Tienda</a>
-                        </li>
                         <?php if (!isset($_SESSION['userLogged'])): ?>
+                            <!-- Usuario no autenticado -->
                             <li class="nav-item">
                                 <a class="nav-link btn btn-secondary" href="<?php echo $url; ?>/user/login.php">Iniciar sesión</a>
                             </li>
@@ -66,6 +66,7 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
                                 <a class="nav-link btn btn-secondary" href="<?php echo $url; ?>/user/register.php">Registrarse</a>
                             </li>
                         <?php else: ?>
+                            <!-- Usuario autenticado -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -81,9 +82,15 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="<?php echo $url; ?>/orders.php">Ver mis compras</a>
+                                        <a class="dropdown-item" href="<?php echo $url; ?>/myOrders.php">Ver mis compras</a>
                                     </li>
                                 </ul>
+                            </li>
+                            <!-- Ícono de carrito de compras -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo $url; ?>/cart.php">
+                                    <i class="bi bi-cart4 fs-3"></i>
+                                </a>
                             </li>
                         <?php endif; ?>
                     </ul>
@@ -91,6 +98,7 @@ $url = str_replace($_SERVER['DOCUMENT_ROOT'], "", dirname(__DIR__));
             </div>
         </nav>
     </header>
+
 </body>
 
 </html>

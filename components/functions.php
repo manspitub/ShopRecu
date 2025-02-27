@@ -180,6 +180,26 @@ function getUserByUsername($username)
     }
 }
 
+function getUserIdBySession()
+{
+    try {
+        $db = Database::getInstance()->getConnection();
+        $stmt = $db->prepare("SELECT id FROM users WHERE username = :username");
+        $stmt->execute(['username' => $_SESSION['userLogged']['username']]); // Corrección del parámetro
+        $result = $stmt->fetch();
+
+        if (!$result) {  // Comprobar si no hay filas
+            redirectError("El usuario no se encuentra registrado");
+            return false;
+        }
+
+        return $result['id'];
+    } catch (PDOException $e) {
+        redirectError("Error de base de datos: " . htmlspecialchars($e->getMessage()));
+        return false;
+    }
+}
+
 function logIn($data)
 {
     $userFind = getUserByUsername($data['username']);
@@ -316,6 +336,17 @@ function getById($table, $id, $columnaId)
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+function getProductNameById($productId)
+{
+    $db = Database::getInstance()->getConnection();
+    // Preparar la consulta SQL para evitar inyecciones SQL
+    $stmt = $db->prepare("SELECT name FROM products WHERE id = ?");
+    $stmt->execute([$productId]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
 
 
 // Category
@@ -597,4 +628,91 @@ function unauthorized($action, $roleUser, $roleValid)
             redirectError("ERROR 401, UNAUTHORIZED");
         }
     }
+}
+
+function getProductStockById($id)
+{
+    $db = Database::getInstance()->getConnection();
+    // Preparar la consulta SQL para evitar inyecciones SQL
+    $stmt = $db->prepare("SELECT stock FROM products WHERE id = ?");
+    $stmt->execute([$id]);
+
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Funcion para realizar una compra con los productos del carrito
+function buy($data)
+{
+    $db = Database::getInstance()->getConnection();
+    $userId = getUserIdBySession();
+    $totalPrice = 0;
+    $productIds = [];
+
+    // Calcular el precio total y verificar si hay stock suficiente para cada producto
+    foreach ($data as $prod) {
+        $product = getProductStockById($prod['productId']);
+        $quantity = $prod['quantity'];
+
+        if ($product && $product['stock'] >= $quantity) {
+            // Acumular el precio total
+            $totalPrice += $prod['total_price'];
+            $productIds[] = $prod['productId'];
+        } else {
+            redirectError("No puedes comprar " . $prod['quantity'] . ' porque quedan ' . $product['stock'] . ' unidades de ' . $prod['productName']);
+        }
+    }
+
+    // Si hay productos válidos en el carrito, insertar el pedido
+    if (!empty($productIds)) {
+        // Insertar el pedido en la tabla 'orders'
+        $orderQuery = "INSERT INTO orders (user_id, total_price, status) VALUES (?, ?, 'pending')";
+        $stmt = $db->prepare($orderQuery);
+        $stmt->execute([$userId, $totalPrice]);
+        $orderId = $db->lastInsertId(); // Obtener el ID del pedido recién insertado
+
+        // Insertar los detalles del pedido en la tabla 'order_details'
+        foreach ($data as $prod) {
+            $quantity = $prod['quantity'];
+            $unitPrice = $prod['total_price'] / $quantity; // Precio unitario
+            $orderDetailQuery = "INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
+            $stmt = $db->prepare($orderDetailQuery);
+            $stmt->execute([$orderId, $prod['productId'], $quantity, $unitPrice]);
+
+            // Restar el stock del producto en la tabla 'products'
+            $updateStockQuery = "UPDATE products SET stock = stock - ? WHERE id = ?";
+            $stmt = $db->prepare($updateStockQuery);
+            $stmt->execute([$quantity, $prod['productId']]);
+        }
+
+        // Vaciar el carrito después de realizar la compra
+        unset($_SESSION['cart']);
+
+        // Redirigir al usuario con un mensaje de éxito
+        echo "<script>window.location.href = '../myOrders.php?success_message=" . urlencode('Compra realizada con éxito, ID de tu pedido: ' . $orderId) . "';</script>";
+    } else {
+        redirectError("No hay productos válidos en el carrito.");
+    }
+}
+
+// GET Mis Compras
+function getPurchaseHistory()
+{
+    $db = Database::getInstance()->getConnection();
+    $id = getUserIdBySession();
+    $sql = "
+        SELECT o.id AS order_id, o.total_price, o.status, od.product_id, od.quantity, od.price, p.name AS product_name
+        FROM orders o
+        JOIN order_details od ON o.id = od.order_id
+        JOIN products p ON od.product_id = p.id
+        WHERE o.user_id = ?
+        ORDER BY o.id DESC
+    ";
+
+    // Preparar y ejecutar la consulta
+    $stmt = $db->prepare($sql);
+
+    $stmt->execute([$id]);
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return $result;
 }
